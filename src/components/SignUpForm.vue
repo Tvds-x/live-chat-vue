@@ -1,32 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { RouterLink } from 'vue-router';
-import { sendCode } from '../api/auth'
+import { RouterLink, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+import ErrorAlert from './UI/ErrorAlert.vue';
+import { sendCode } from '../api/auth'
+import { ref } from 'vue';
 import type { sendCodeResponse } from '../interfaces/interfaces.ts'
 
-
+const router = useRouter();
 const userStore = useUserStore();
-const email = ref('')
-const loading = ref(false)
+
+const emailInput = ref('')
+const isLoading = ref(false)
+const isShowError = ref(false)
+const errorToShow = ref('')
+
+function showError(text:string, duration: number){
+  isShowError.value = true;
+  errorToShow.value = text;
+  setTimeout(() => isShowError.value = false, duration)
+}
 
 async function submitHandler() {
+
   try {
-    loading.value = true;
-    const response: sendCodeResponse = await sendCode(email.value)
+    isLoading.value = true;
+    const response: sendCodeResponse = await sendCode(emailInput.value)
 
     if (response.error && response.error.responseCode === 504) {
+      showError('Enter correct mail!', 4000)
       throw new Error('Invalid Email')
     } else {
-      userStore.userMail = response.email;
-      userStore.userName = response.name;
+      userStore.setUserInfo(response.email, response.name)
+      router.push('enter-code');
     }
 
   } catch (error) {
     console.log(error)
   } finally {
-    email.value = ''
-    loading.value = false
+    emailInput.value = ''
+    isLoading.value = false
   }
 
 }
@@ -34,15 +46,16 @@ async function submitHandler() {
 </script>
 
 <template>
+  <error-alert v-if="isShowError" :message="errorToShow"/>
   <p class="welcome">Welcome!</p>
-  <div v-if="loading" class="loader">
+  <div v-if="isLoading" class="loader">
     <div class="lds-circle">
       <div></div>
     </div>
   </div>
   <form v-else class="sign-up-content__form" action="" @submit.prevent="submitHandler">
     <p class="sign-up-content__subtitle">Enter email to get code:</p>
-    <input v-model="email" class="sign-up-content__input" type="email">
+    <input v-model="emailInput" class="sign-up-content__input" type="email">
     <div class="sign-up-content__button-wrapper">
       <router-link to="/enter-code">
         <button class="btn_back" type="button">
@@ -117,10 +130,7 @@ button:active {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-
-
-
-.loader{
+.loader {
   min-width: 265px;
   min-height: 118px;
   display: flex;
@@ -162,4 +172,5 @@ button:active {
   100% {
     transform: rotateY(3600deg);
   }
-}</style>
+}
+</style>
