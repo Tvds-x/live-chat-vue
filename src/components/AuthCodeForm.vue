@@ -3,12 +3,13 @@ import { RouterLink } from 'vue-router';
 </script>
 
 <template>
+  <p class="welcome">Welcome Back!</p>
   <form class="login-content__form" action="" @submit.prevent="">
     <p class="login-content__subtitle">Enter auth code:</p>
     <input class="login-content__input" type="text">
     <div class="login-content__button-wrapper">
       <router-link to="/sign-up">
-        <button class="btn_sign-up">
+        <button class="btn_sign-up" type="button">
           Sign Up
         </button>
       </router-link>
@@ -72,5 +73,10 @@ button:hover {
 button:active {
   transform: translateY(-1px);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+.welcome {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--c-secondary);
 }
 </style>

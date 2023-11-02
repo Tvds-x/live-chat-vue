@@ -8,7 +8,7 @@ import { RouterView } from 'vue-router';
     <div class="wrappper">
       <img class="login-image" src="@/assets/login-img.svg" alt="">
       <main class="login-content">
-        <p class="login-content__welcome">Welcome Back!</p>
+        <!-- <p class="login-content__welcome">Welcome Back!</p> -->
         <router-view></router-view>
       </main>
     </div>
@@ -21,10 +21,10 @@ import { RouterView } from 'vue-router';
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: var(--c-secondary);
 }
 
 .wrappper {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   background-color: white;
   width: 75vw;
   height: 90vh;
@@ -38,6 +38,7 @@ import { RouterView } from 'vue-router';
 .login-content{
   display: flex;
   flex-direction: column;
+  /* align-items: center; */
   gap: 25px;
 }
 .login-image{
