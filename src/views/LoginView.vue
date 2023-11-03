@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import { RouterView, useRouter } from 'vue-router';
+import Cookie from 'js-cookie';
+
+const router = useRouter();
+
+if( Cookie.get('authCode') ){
+  router.push('/chat')
+}
 
 </script>
 
@@ -8,7 +15,6 @@ import { RouterView } from 'vue-router';
     <div class="wrappper">
       <img class="login-image" src="@/assets/login-img.svg" alt="">
       <main class="login-content">
-        <!-- <p class="login-content__welcome">Welcome Back!</p> -->
         <router-view></router-view>
       </main>
     </div>
@@ -38,7 +44,6 @@ import { RouterView } from 'vue-router';
 .login-content{
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
   gap: 25px;
 }
 .login-image{

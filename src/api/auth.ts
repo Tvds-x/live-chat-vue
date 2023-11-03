@@ -27,10 +27,7 @@ export async function isValidToken(token: string) {
         Authorization: `Bearer ${token}`
       }
     })
-    if (!response.ok) {
-      return false
-    }
-    return true
+    return (response.ok)
   } catch (error) {
     console.log(error)
     return false

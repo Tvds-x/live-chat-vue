@@ -1,12 +1,60 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
+import Cookies from 'js-cookie';
+import { isValidToken } from '@/api/auth';
+import { ref } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
+import ErrorAlert from './UI/ErrorAlert.vue';
+import LoaderLoginView from './UI/LoaderLoginView.vue';
+
+const router = useRouter();
+
+const authCode = ref('');
+const isLoading = ref(false)
+const isShowError = ref(false)
+const errorToShow = ref('')
+
+function showError(text: string, duration: number) {
+  isShowError.value = true;
+  errorToShow.value = text;
+  setTimeout(() => isShowError.value = false, duration)
+}
+
+
+async function submitHandler() {
+  if (!authCode.value) return
+
+  try {
+    isLoading.value = true;
+
+    if (!(await isValidToken(authCode.value))) {
+      showError('Invalid Token!', 3000)
+      return;
+    }
+
+    router.push('/chat')
+
+    Cookies.set('authCode', `${authCode.value}`);
+
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isLoading.value = false
+    authCode.value = '';
+  }
+
+}
+
 </script>
 
 <template>
+  <Transition name="error">
+    <error-alert v-if="isShowError" :message="errorToShow" />
+  </Transition>
   <p class="welcome">Welcome Back!</p>
-  <form class="login-content__form" action="" @submit.prevent="">
+  <loader-login-view v-if="isLoading"></loader-login-view>
+  <form v-else class="login-content__form" action="" @submit.prevent="submitHandler">
     <p class="login-content__subtitle">Enter auth code:</p>
-    <input class="login-content__input" type="text">
+    <input v-model="authCode" class="login-content__input" type="text">
     <div class="login-content__button-wrapper">
       <router-link to="/sign-up">
         <button class="btn_sign-up" type="button">
@@ -74,6 +122,7 @@ button:active {
   transform: translateY(-1px);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
+
 .welcome {
   font-size: 32px;
   font-weight: bold;

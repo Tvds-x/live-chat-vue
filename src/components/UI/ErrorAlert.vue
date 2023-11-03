@@ -9,8 +9,6 @@ const props = defineProps({
 </script>
 
 <template>
-  <!-- eslint-disable vue/require-toggle-inside-transition -->
-  <Transition name="alert">
     <div class="alert">
       <span class="content">
         <span class="error">Error!</span>
@@ -18,7 +16,6 @@ const props = defineProps({
         {{ props.message }}
       </span>
     </div>
-  </Transition>
 </template>
 
 
@@ -49,13 +46,14 @@ const props = defineProps({
 }
 
 
-.alert-enter-active,
-.alert-leave-active {
-  transition: opacity 0.5s ease;
+
+.error-enter-active,
+.error-leave-active {
+  transition: opacity 0.5s ease-in-out;
 }
 
-.alert-enter-from,
-.alert-leave-to {
+.error-enter-from,
+.error-leave-to {
   opacity: 0;
 }
 </style>

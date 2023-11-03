@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+import LoaderLoginView from './UI/LoaderLoginView.vue';
 import ErrorAlert from './UI/ErrorAlert.vue';
 import { sendCode } from '../api/auth'
 import { ref } from 'vue';
@@ -27,7 +28,7 @@ async function submitHandler() {
     const response: sendCodeResponse = await sendCode(emailInput.value)
 
     if (response.error && response.error.responseCode === 504) {
-      showError('Enter correct mail!', 4000)
+      showError('Enter correct mail!', 3000)
       throw new Error('Invalid Email')
     } else {
       userStore.setUserInfo(response.email, response.name)
@@ -46,13 +47,11 @@ async function submitHandler() {
 </script>
 
 <template>
-  <error-alert v-if="isShowError" :message="errorToShow"/>
+  <Transition name="error">
+    <error-alert v-if="isShowError" :message="errorToShow"/>
+  </Transition>
   <p class="welcome">Welcome!</p>
-  <div v-if="isLoading" class="loader">
-    <div class="lds-circle">
-      <div></div>
-    </div>
-  </div>
+  <loader-login-view v-if="isLoading"></loader-login-view>
   <form v-else class="sign-up-content__form" action="" @submit.prevent="submitHandler">
     <p class="sign-up-content__subtitle">Enter email to get code:</p>
     <input v-model="emailInput" class="sign-up-content__input" type="email">
@@ -130,47 +129,6 @@ button:active {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-.loader {
-  min-width: 265px;
-  min-height: 118px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
-}
-.lds-circle {
-  display: inline-block;
-  transform: translateZ(1px);
-}
 
-.lds-circle>div {
-  display: inline-block;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
-  border-radius: 50%;
-  background: var(--c-dark);
-  animation: lds-circle 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-}
-
-@keyframes lds-circle {
-
-  0%,
-  100% {
-    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
-  }
-
-  0% {
-    transform: rotateY(0deg);
-  }
-
-  50% {
-    transform: rotateY(1800deg);
-    animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
-  }
-
-  100% {
-    transform: rotateY(3600deg);
-  }
-}
 </style>
